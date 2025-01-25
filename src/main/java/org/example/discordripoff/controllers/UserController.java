@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -27,4 +29,18 @@ public class UserController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.findActiveUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    // Add method for adding friends
+    @PostMapping("/{userId}/friends/{friendId}")
+    public ResponseEntity<Void> addFriend(@PathVariable int userId, @PathVariable int friendId) {
+        boolean added = userService.addFriend(userId, friendId);
+        return added ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
+    }
+
+
 }
