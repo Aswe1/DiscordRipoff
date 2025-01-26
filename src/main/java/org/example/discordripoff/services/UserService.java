@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -17,19 +18,33 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
+    public boolean IsValidUser(User user)
+    {
+        if (user.getEmail() == null || user.getEmail().isEmpty())
+            return false;
+
+        Optional<User> testUser = userRepo.findByEmail(user.getEmail());
+        if(testUser.isEmpty())
+            return false;
+
+        return !testUser.equals(user);
+    }
+
     public User createUser(User user) {
         if (userRepo.findByEmail(user.getEmail()).isPresent()) {
             throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
+                    HttpStatus.NOT_ACCEPTABLE,
                     "Email already exists"
             );
         }
         return userRepo.save(user);
     }
 
+    //Will currently only return the first user with the specified username. For uniqueness use
     public Optional<User> getUserByUsername(String username) {
-        return userRepo.findByUsername(username);
+        return Optional.ofNullable(userRepo.findByUsername(username).getFirst());
     }
+
     public List<User> findActiveUsers() {
         return userRepo.findByIsActive(true);
     }

@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -33,5 +34,18 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "user2_id") // user2_id като приятел
     )
     private List<User> friends = new ArrayList<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true; // Check reference equality
+        if (o == null || getClass() != o.getClass()) return false; // Check type
+        User user = (User) o;
+        return Objects.equals(email, user.email); // Compare unique identifiers
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email); // Ensure consistency with equals
+    }
 
 }
