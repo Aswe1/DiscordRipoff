@@ -21,31 +21,35 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(nullable = false)
     private String username;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
     private String email;
+
     @Column(name = "is_active")
     private boolean isActive = true;
 
-    @ManyToMany
-    @JoinTable(
-            name = "friendships", // Таблицата за връзката
-            joinColumns = @JoinColumn(name = "user1_id"), // user1_id като текущия потребител
-            inverseJoinColumns = @JoinColumn(name = "user2_id") // user2_id като приятел
-    )
-    private List<User> friends = new ArrayList<>();
+//    @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Friendship> friendships = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Channel> ownedChannels = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true; // Check reference equality
-        if (o == null || getClass() != o.getClass()) return false; // Check type
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(email, user.email); // Compare unique identifiers
+        return Objects.equals(email, user.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(email); // Ensure consistency with equals
+        return Objects.hash(email);
     }
 
 }

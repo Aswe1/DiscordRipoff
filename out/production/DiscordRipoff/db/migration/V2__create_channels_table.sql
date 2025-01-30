@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS channels (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    owner_id INT,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    owner_id INT NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (owner_id) REFERENCES users(id)
 );

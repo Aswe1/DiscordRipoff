@@ -1,13 +1,13 @@
 package org.example.discordripoff.services;
 
 import org.example.discordripoff.entities.User;
+import org.example.discordripoff.http.AppResponse;
 import org.example.discordripoff.repositories.UserRepo;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -18,35 +18,33 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    public boolean IsValidUser(User user)
+    public ResponseEntity<?> IsValidUser(User user)
     {
         if (user.getEmail() == null || user.getEmail().isEmpty())
-            return false;
+            return AppResponse.error().withMessage("Invalid Email").build();
 
         Optional<User> testUser = userRepo.findByEmail(user.getEmail());
         if(testUser.isEmpty())
-            return false;
+            return AppResponse.error().withMessage("Invalid User").build();
 
-        return !testUser.equals(user);
+        return AppResponse.success().withData( PrepData(testUser.get())).build();
     }
 
-    public User createUser(User user) {
-        if (userRepo.findByEmail(user.getEmail()).isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_ACCEPTABLE,
-                    "Email already exists"
-            );
-        }
-        return userRepo.save(user);
+    public ResponseEntity<?> createUser(User user) {
+        if (userRepo.findByEmail(user.getEmail()).isPresent())   return AppResponse.error().withMessage("Email already in Use").build();
+        if (userRepo.findByUsername(user.getUsername()).isPresent())    return AppResponse.error().withMessage("Username Taken").build();
+
+        return AppResponse.success().withData(userRepo.save(user)).build();
     }
 
-    //Will currently only return the first user with the specified username. For uniqueness use
+
     public Optional<User> getUserByUsername(String username) {
-        return Optional.ofNullable(userRepo.findByUsername(username).getFirst());
+        return userRepo.findByUsername(username);
     }
 
     public List<User> findActiveUsers() {
-        return userRepo.findByIsActive(true);
+
+        return PrepData(userRepo.findByisActive(true));
     }
 
     public boolean removeUser(int id) {
@@ -60,17 +58,17 @@ public class UserService {
         return false;
     }
 
-    public boolean addFriend(int userId, int friendId) {
-        User user = userRepo.findById(userId).orElse(null);
-        User friend = userRepo.findById(friendId).orElse(null);
-
-        if (user == null || friend == null) return false;
-
-        if (!user.getFriends().contains(friend)) {
-            user.getFriends().add(friend);
-            userRepo.save(user);
-            return true;
+    // This will clear Friendship data as it is currently its recursive loop,
+    public User PrepData(User user)
+    {
+//        user.setFriendships(new ArrayList<>());
+        return user;
+    }
+    // Same as PrepData just for ArrayLists
+    public List<User> PrepData(List<User> users) {
+        for (User user : users) {
+//            user.setFriendships(new ArrayList<>());
         }
-        return false;
+        return users;
     }
 }
