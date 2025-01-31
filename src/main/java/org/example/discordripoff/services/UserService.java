@@ -20,6 +20,7 @@ public class UserService {
 
     public ResponseEntity<?> IsValidUser(User user)
     {
+        //Only checking email for simplicity
         if (user.getEmail() == null || user.getEmail().isEmpty())
             return AppResponse.error().withMessage("Invalid Email").build();
 

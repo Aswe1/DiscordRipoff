@@ -33,8 +33,8 @@ public class Channel {
 //    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Channel_User> members = new ArrayList<>();
 
-    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Message> messages = new ArrayList<>();
+//    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Message> messages = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

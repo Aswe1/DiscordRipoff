@@ -98,8 +98,7 @@ public class FriendshipService {
     {
         Optional<User> optionalUser = userRepo.findById(userId);
         Optional<User> optionalFriend = userRepo.findById(friendId);
-        if(!optionalUser.isPresent() || !optionalFriend.isPresent())
-            return AppResponse.error().withMessage("User not found").build();
+        if(optionalUser.isEmpty() || optionalFriend.isEmpty()) return AppResponse.error().withMessage("User not found").build();
 
         return AppResponse.success().withData(messageRepo.findByTwoUsers(optionalUser.get(), optionalFriend.get())).build();
     }
@@ -108,10 +107,8 @@ public class FriendshipService {
     {
         Optional<User> optionalSender = userRepo.findById(message.getSender().getId());
         Optional<User> optionalReceiver = userRepo.findById(message.getReceiver().getId());
-        if(!optionalSender.isPresent() || !optionalReceiver.isPresent())
-            return AppResponse.error().withMessage("Bad Message").build();
-        if (message.getContent().isEmpty())
-            return AppResponse.error().withMessage("Empty Message").build();
+        if(optionalSender.isEmpty() || optionalReceiver.isEmpty()) return AppResponse.error().withMessage("Bad Message").build();
+        if (message.getContent().isEmpty()) return AppResponse.error().withMessage("Empty Message").build();
 
         messageRepo.save(message);
         return AppResponse.success().withMessage("Message added successfully").build();
